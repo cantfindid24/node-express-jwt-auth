@@ -26,25 +26,6 @@ app.get('/', (req, res) => res.render('home'));
 app.get('/smoothies', (req, res) => res.render('smoothies'));
 app.use('/', auth);
 
-//cookies learning
-app.get('/set-cookies', (req, res) => {
-  res.setHeader('Set-Cookie', 'cookieKey1=value1');
-  res.setHeader('Set-Cookie', 'cookieKey2=value2');
-  res.setHeader('Set-Cookie', 'newUser=false');
-  res.setHeader('Set-Cookie', 'newUser=true');
-  res.cookie('key', 'value', 'ohter');
-  res.cookie('newUser', false);
-  res.cookie('isEmployee', true);
-  res.cookie('hello', true, { secure: true });
-  res.cookie('isBoss', true, { maxAge: 1000 * 10, httpOnly: true }); //10sec
-
-  res.send('You got the cookie');
-});
-app.get('/read-cookies', (req, res) => {
-  const cookies = req.cookies;
-  res.json(cookies);
-});
-
 app.listen(PORT, () => {
   console.log(`Server is listening on port: ${PORT}`);
 });
