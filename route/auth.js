@@ -79,6 +79,10 @@ router
       const errors = handleValidationError(err);
       return res.status(400).json({ errors });
     }
+  })
+  .get('/logout', async (req, res) => {
+    res.cookie('jwt', '', { maxAge: 1 });
+    res.redirect('/');
   });
 
 export default router;
