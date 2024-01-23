@@ -95,7 +95,9 @@ button {
 button:hover {
   cursor: pointer;
 }
-.error {
+.error,
+.emailError,
+.passwordError {
   color: #ff0099;
   margin: 10px 2px;
   font-size: 0.8em;

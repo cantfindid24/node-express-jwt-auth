@@ -1,6 +1,8 @@
 import express from 'express';
 const router = express.Router();
 import User from '../model/user.js';
+import generateToken from '../views/utils.js';
+import bcrypt from 'bcryptjs';
 
 const handleValidationError = (err) => {
   // console.log(err.message, err.code);
@@ -10,6 +12,15 @@ const handleValidationError = (err) => {
   if (err.code === 11000) {
     errors.email = 'an user with this email already exists';
     return errors;
+  }
+
+  //incorrect email
+  if (err.message === 'incorrect email') {
+    errors.email = 'that email is not registered';
+  }
+  //incorrect password
+  if (err.message === 'incorrect password') {
+    errors.password = 'that password is incorrect';
   }
 
   //validation errors
@@ -34,7 +45,9 @@ router
         email,
         password,
       });
-      res.status(201).json({ msg: 'new user signed up' });
+      const token = generateToken(newUser._id);
+      res.cookie('jwt', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+      res.status(201).json({ user: newUser._id });
     } catch (error) {
       const errors = handleValidationError(error);
       res.status(400).json({ errors });
@@ -45,9 +58,27 @@ router
   .get('/signin', (req, res) => {
     return res.render('signin');
   })
-  .post('/signin', (req, res) => {
+  .post('/signin', async (req, res) => {
     const { email, password } = req.body;
-    res.json({ email, password });
+    try {
+      const userExist = await User.findOne({ email });
+
+      if (userExist) {
+        const auth = await bcrypt.compare(password, userExist.password);
+
+        if (auth) {
+          const token = generateToken(userExist._id);
+          res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000,
+          });
+          return res.status(200).json({ user: userExist._id });
+        } else throw Error('incorrect password');
+      } else throw Error('incorrect email');
+    } catch (err) {
+      const errors = handleValidationError(err);
+      return res.status(400).json({ errors });
+    }
   });
 
 export default router;

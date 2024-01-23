@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import pkg from 'validator';
 const { isEmail } = pkg;
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 const userSchema = mongoose.Schema({
   name: { type: String, required: [true, 'Please enter your name'] },
   email: {
