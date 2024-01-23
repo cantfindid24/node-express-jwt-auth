@@ -3,6 +3,7 @@ const router = express.Router();
 import User from '../model/user.js';
 import generateToken from '../views/utils.js';
 import bcrypt from 'bcryptjs';
+import { checkUser } from '../middleware/authMiddleware.js';
 
 const handleValidationError = (err) => {
   // console.log(err.message, err.code);
@@ -34,7 +35,9 @@ const handleValidationError = (err) => {
 };
 
 router
-  .get('/signup', (req, res) => {
+  .get('/signup', checkUser, (req, res) => {
+    console.log(req);
+    if (res.locals.user) return res.redirect('/');
     return res.render('signup');
   })
   .post('/signup', async (req, res) => {
@@ -55,7 +58,9 @@ router
   });
 
 router
-  .get('/signin', (req, res) => {
+  .get('/signin', checkUser, (req, res) => {
+    console.log(req);
+    if (res.locals.user) return res.redirect('/');
     return res.render('signin');
   })
   .post('/signin', async (req, res) => {
