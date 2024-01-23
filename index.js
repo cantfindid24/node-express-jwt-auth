@@ -2,7 +2,7 @@ import express from 'express';
 import connectMongoDb from './connection.js';
 import cookieParser from 'cookie-parser';
 import auth from './route/auth.js';
-import isUserAuthenticated from './middleware/authMiddleware.js';
+import isUserAuthenticated, { checkUser } from './middleware/authMiddleware.js';
 const PORT = 8001;
 const app = express();
 
@@ -23,6 +23,7 @@ const __dirname = path.resolve();
 app.set('views', path.join(__dirname, '/views'));
 
 // routes
+app.get('*', checkUser);
 app.get('/', (req, res) => res.render('home'));
 app.get('/smoothies', isUserAuthenticated, (req, res) =>
   res.render('smoothies')
